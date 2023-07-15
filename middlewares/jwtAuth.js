@@ -12,7 +12,6 @@ const jwtAuth = (req, res, next) => {
 
     try {
         const payload = JWT.verify(token, process.env.SECRET)
-        console.log('payload', payload);
 
         req.user = {
             id: payload.id,

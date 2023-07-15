@@ -69,8 +69,6 @@ const signin = async (req, res) => {
     }
 
     const user = await userModel.findOne({ email }).select("+password")
-    console.log(user);
-    console.log(email, password);
 
     if (!user || user.password !== password) {
         messageTemplate.success = false
@@ -99,7 +97,7 @@ const signin = async (req, res) => {
     } catch (error) {
         messageTemplate.success = false
         messageTemplate.message = `Sign in unsuccessfully: ${error.message}`
-        messageTemplate.data = user
+        messageTemplate.data = null
 
         return res.status(400).json(messageTemplate)
     }
@@ -126,8 +124,34 @@ const getuser = async (req, res) => {
     }
 }
 
+const logout = async (req, res) => {
+
+    const userId = req.user.id;
+
+    const user = await userModel.findById(userId)
+    user.password = undefined
+    user.confirmPassword = undefined
+    try {
+
+        res.clearCookie('token');
+        messageTemplate.success = true
+        messageTemplate.message = 'Logout successfully'
+        messageTemplate.data = user
+
+        return res.status(200).json(messageTemplate)
+
+    } catch (error) {
+        messageTemplate.success = false
+        messageTemplate.message = 'logout failed'
+        messageTemplate.data = null
+
+        return res.status(400).json(messageTemplate)
+    }
+}
+
 module.exports = {
     signup,
     signin,
     getuser,
+    logout,
 }
